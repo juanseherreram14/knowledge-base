@@ -1,0 +1,13 @@
+id: R-1056
+name: No crear recibo si faltan consumos de componentes
+object_type: 59
+transactions: [A, U]
+policy_type: Consistencia
+domain: ConsumoComponentes
+tables: [OWOR, WOR1, IGN1, IGE1]
+condition_summary: >
+  Para cada componente (WOR1.ItemType=4) la suma de consumos (IGE1) debe ser igual al PlannedQty.
+error:
+  code: -1056
+  message: "HBT: No puede crear el recibo de producción si no se ha realizado el consumo de todos los componentes"
+severity: Bloqueante

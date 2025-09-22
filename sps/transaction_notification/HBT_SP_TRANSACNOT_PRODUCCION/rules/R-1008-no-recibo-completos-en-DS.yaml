@@ -1,0 +1,13 @@
+id: R-1008
+name: No recibo de COMPLETOS en almacén DS (cuarentena)
+object_type: 59     # OIGN/IGN1
+transactions: [A, U]
+policy_type: Prohibicion
+domain: Almacen
+tables: [IGN1]
+condition_summary: >
+  IGN1.TranType='C' AND WhsCode='DS' AND BaseType=202.
+error:
+  code: -1008
+  message: "HBT: No puede ingresar producto completo a almacén cuarentena"
+severity: Bloqueante

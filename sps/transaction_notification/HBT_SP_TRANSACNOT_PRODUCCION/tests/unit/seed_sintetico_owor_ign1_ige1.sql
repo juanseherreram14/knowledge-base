@@ -1,0 +1,2 @@
+-- Semilla mínima para probar reglas de OWOR/IGN1/IGE1 (ajusta tipos y columnas a tu esquema)
+-- INSERTS de ejemplo comentados; descomenta y adapta antes de ejecutar en QA.

@@ -1,0 +1,2 @@
+-- Verifica que no permita dos OF abiertas misma variedad
+-- Crea OF abierta existente y otra con el mismo Item/Variedad -> espera -1005

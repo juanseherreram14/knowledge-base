@@ -1,0 +1,16 @@
+id: SBO_SP_POSTTRANSACTIONNOTICE
+name: SBO_SP_POSTTRANSACTIONNOTICE
+engine: HANA # o MSSQL según aplique
+scope: TRANS_NOTIFICATION
+owner: juan.herrera@heinsohntech.com
+version: 1.0.0
+objects: [ ]      # ej: [202, 59, 60, 162, 66]
+tables: [ ]       # ej: OWOR, OIGN, IGN1, ...
+udf_keys: [ ]     # ej: U_ASA_OP, U_ASA_PROC_OF, ...
+risk_level: Alto
+nl_examples:
+  - "Validar condiciones de producción antes de cerrar OF"
+  - "Bloquear recibo sin consumo de componentes"
+changelog:
+  - date: 2025-09-18
+    change: "Creación inicial desde legado"

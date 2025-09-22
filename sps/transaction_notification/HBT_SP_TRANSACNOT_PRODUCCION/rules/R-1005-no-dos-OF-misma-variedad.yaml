@@ -1,0 +1,13 @@
+id: R-1005
+name: No permite dos OF abiertas de la misma variedad
+object_type: 202
+transactions: [A, U]
+policy_type: Prohibicion
+domain: Variedad
+tables: [OWOR]
+condition_summary: >
+  Existe otra OF abierta (Status IN ['R','P']) con mismo ItemCode/Variedad y U_ASA_PROC_OF='P-AGR'.
+error:
+  code: -1005
+  message: "HBT: No puede haber dos ordenes de fabricación abiertas de la misma variedad"
+severity: Bloqueante

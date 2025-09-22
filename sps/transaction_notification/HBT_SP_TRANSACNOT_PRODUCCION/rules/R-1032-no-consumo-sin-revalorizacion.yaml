@@ -1,0 +1,14 @@
+id: R-1032
+name: No consumir si el lote no ha sido revalorizado (reproceso)
+object_type: 60
+transactions: [A, U]
+policy_type: Prohibicion
+domain: Revalorizacion
+tables: [OIGE, IGE1, OWOR, OITM, OITL, ITL1, OBTN, OBVL]
+condition_summary: >
+  Lote DistNumber de consumo NO existe en OBVL con DocType=162 (revalorización) para el mismo ItemCode;
+  proceso P-PIN y tipo de artículo '02'.
+error:
+  code: -1032
+  message: "HBT: No puede consumir si no hay revalorización del lote"
+severity: Bloqueante

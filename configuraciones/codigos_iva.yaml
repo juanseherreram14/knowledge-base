@@ -1,0 +1,7 @@
+# Códigos de IVA (ejemplo)
+# - code: "IVA12"
+#   description: "IVA 12%"
+#   rate: 12.0
+# - code: "IVA0"
+#   description: "IVA 0%"
+#   rate: 0.0

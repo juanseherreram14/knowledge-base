@@ -1,0 +1,13 @@
+id: R-1011
+name: Tipo de entrada obligatorio (no OF)
+object_type: 59
+transactions: [A, U]
+policy_type: Obligatorio
+domain: TipoOperacion
+tables: [OIGN, IGN1]
+condition_summary: >
+  (OIGN.U_ASA_TIP_ENT IS NULL OR '') AND IGN1.BaseType<>202.
+error:
+  code: -1011
+  message: "HBT: Debe registrar tipo de entrada"
+severity: Bloqueante

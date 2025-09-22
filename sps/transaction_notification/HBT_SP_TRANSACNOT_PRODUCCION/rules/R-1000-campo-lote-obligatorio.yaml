@@ -1,0 +1,16 @@
+id: R-1000
+name: Campo Lote obligatorio en OWOR
+object_type: 202     # OWOR
+transactions: [A, U]
+policy_type: Obligatorio
+domain: Lote
+tables: [OWOR]
+condition_summary: >
+  OWOR.DocEntry = :list_of_cols_val_tab_del
+  AND U_ASA_PROC_OF NOT IN ('P-AGR','P-REEMP')
+  AND (U_ASA_OP IS NULL OR U_ASA_OP='').
+error:
+  code: -1000
+  message: "HBT: Debe llenar el campo Lote"
+severity: Bloqueante
+nlq_alias: ["exigir lote en OF", "lote obligatorio"]

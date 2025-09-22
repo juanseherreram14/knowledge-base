@@ -1,0 +1,231 @@
+USE [PRUEBAS_ECUADOR_10OCT]
+GO
+/****** Object:  UserDefinedFunction [dbo].[HT_InformeFacturasProveedores]    Script Date: 2/6/2024 4:07:43 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER FUNCTION [dbo].[HT_InformeFacturasProveedores] (@FechaInicio DATE, @FechaFin DATE)
+RETURNS TABLE  
+AS
+	RETURN 
+(
+SELECT
+            'FACT' AS "Tipo",
+			OPCH."DocType",
+            OPCH."WTSum" AS "RetTot",
+            T2."BeginStr"+''+T2."EndStr"+'00'+RIGHT(CAST(OPCH."DocNum" AS nvarchar(10)),7) AS "DocNum", 
+            OPCH."U_HBT_SER_EST"+''+OPCH."U_HBT_PTO_EST"+''+OPCH."NumAtCard" AS "NumAtCard",
+            OPCH."TaxDate", 
+            OPCH."CardCode",
+            OPCH."CardName",
+            ISNULL(BaseSinIva."BaseSinIva",0) AS "BaseSinIva",
+            ISNULL(BaseConIva."BaseConIva",0) AS "BaseConIva",
+            OPCH."VatSum" AS "IVA",
+            OPCH."DocTotal" AS "TotFact",
+            0 AS "ICE",
+            ISNULL(RetFte."RetFte",0) AS "RetFte",
+            ISNULL(RetIVA."RetIVA",0) AS "RetIVA",
+            OPCH."U_HBT_SUS_TRIB" AS "IST",
+            OPCH."U_HBT_TIP_COMP" AS "TP",
+			ISNULL(ExcentoIva."ExcentoIva",0) AS "ExcentoIva",
+			OCRD."LicTradNum",
+			OPCH."U_HBT_AUT_FAC",
+			OPCH."U_HBT_Autorizacion",
+			'0' AS "U_SYP_MTVCOMP",
+			ISNULL(IvaNoObj."IvaNoObj",0) AS "IvaNoObj"
+      FROM OPCH
+	  INNER JOIN OCRD ON OPCH."CardCode" = OCRD."CardCode"
+	  INNER JOIN NNM1 T2 ON OPCH."Series" = T2."Series" AND T2."ObjectCode" = '18' 
+      LEFT JOIN
+      (
+            SELECT
+                  OPCH."DocEntry",
+                  SUM((PCH1."LineTotal")-(PCH1."LineTotal"*OPCH."DiscPrcnt"/100)) AS "BaseSinIva"
+            FROM OPCH
+            INNER JOIN PCH1 ON PCH1."DocEntry" = OPCH."DocEntry" 
+            INNER JOIN OCRD ON OPCH."CardCode" = OCRD."CardCode"
+			INNER JOIN OSTC ON PCH1."TaxCode" = OSTC."Code"
+            --INNER JOIN CRD1 ON OCRD."CardCode" = CRD1."CardCode" AND ISNULL(OPCH.PayToCode,'PRINCIPAL') = CRD1.Address AND CRD1.AdresType='B' AND CRD1.Country = 'EC'
+            WHERE OPCH."CANCELED" = 'N' 
+			AND OSTC."U_HBT_TarifaIVA" = '0'
+            --AND PCH1."TaxCode" LIKE 'IVA%0'
+            GROUP BY OPCH."DocEntry"
+      )BaseSinIva ON OPCH."DocEntry" = BaseSinIva."DocEntry"
+      LEFT JOIN
+      (
+            SELECT
+                  OPCH."DocEntry",
+                  SUM((PCH1."LineTotal")-(PCH1."LineTotal"*OPCH."DiscPrcnt"/100)) AS "BaseConIva"
+            FROM OPCH
+            INNER JOIN PCH1 ON PCH1."DocEntry" = OPCH."DocEntry" 
+            INNER JOIN OCRD ON OPCH."CardCode" = OCRD."CardCode"
+			INNER JOIN OSTC ON PCH1."TaxCode" = OSTC."Code"
+            --INNER JOIN CRD1 ON OCRD."CardCode" = CRD1."CardCode" AND ISNULL(OPCH.PayToCode,'MATRIZ') = CRD1.Address AND CRD1.AdresType='B' AND CRD1.Country = 'EC'
+            WHERE OPCH."CANCELED" = 'N' 
+			AND OSTC."U_HBT_TarifaIVA" = '2'
+            --AND PCH1."TaxCode" LIKE 'IVA%12'
+            GROUP BY OPCH."DocEntry"
+      )BaseConIva ON OPCH."DocEntry" = BaseConIva."DocEntry"
+	  LEFT JOIN
+      (
+            SELECT
+                  OPCH."DocEntry",
+                  SUM((PCH1."LineTotal")-(PCH1."LineTotal"*OPCH."DiscPrcnt"/100)) AS "ExcentoIva"
+            FROM OPCH
+            INNER JOIN PCH1 ON PCH1."DocEntry" = OPCH."DocEntry" 
+            INNER JOIN OCRD ON OPCH."CardCode" = OCRD."CardCode"
+			INNER JOIN OSTC ON PCH1."TaxCode" = OSTC."Code"
+            --INNER JOIN CRD1 ON OCRD."CardCode" = CRD1."CardCode" AND ISNULL(OPCH.PayToCode,'MATRIZ') = CRD1.Address AND CRD1.AdresType='B' AND CRD1.Country = 'EC'
+            WHERE OPCH."CANCELED" = 'N' 
+			AND OSTC."U_HBT_TarifaIVA" = '7'
+            --AND PCH1."TaxCode" = 'EXE_IVA'
+            GROUP BY OPCH."DocEntry"
+      )ExcentoIva ON OPCH."DocEntry" = ExcentoIva."DocEntry"
+	  LEFT JOIN
+      (
+            SELECT
+                  OPCH."DocEntry",
+                  SUM((PCH1."LineTotal")-(PCH1."LineTotal"*OPCH."DiscPrcnt"/100)) AS "IvaNoObj"
+            FROM OPCH
+            INNER JOIN PCH1 ON PCH1."DocEntry" = OPCH."DocEntry" 
+            INNER JOIN OCRD ON OPCH."CardCode" = OCRD."CardCode"
+			INNER JOIN OSTC ON PCH1."TaxCode" = OSTC."Code"
+            WHERE OPCH."CANCELED" = 'N' 
+			AND OSTC."U_HBT_TarifaIVA" = '6'
+            --AND PCH1."TaxCode" LIKE 'IVA%OB'
+            GROUP BY OPCH."DocEntry"
+      )IvaNoObj ON OPCH."DocEntry" = IvaNoObj."DocEntry"
+      LEFT JOIN
+      (
+            SELECT 
+                  PCH5."AbsEntry",
+                  SUM("WTAmnt") AS "RetFte"
+            FROM PCH5
+            WHERE "BaseType" = 'N'
+            GROUP BY PCH5."AbsEntry"
+      )RetFte ON OPCH."DocEntry" = RetFte."AbsEntry"
+      LEFT JOIN
+      (
+            SELECT 
+                  PCH5."AbsEntry",
+                  SUM("WTAmnt") AS "RetIVA"
+            FROM PCH5
+            WHERE "BaseType" = 'V'
+            GROUP BY PCH5."AbsEntry"
+      )RetIVA ON OPCH."DocEntry" = RetIVA."AbsEntry"
+      WHERE OPCH."CANCELED" = 'N'
+      AND OPCH."DocSubType" = '--'
+      AND ISNULL(OPCH."U_HBT_SUS_TRIB",'') <> 99
+      AND OPCH."TaxDate" BETWEEN @FechaInicio and @FechaFin
+)
+UNION ALL
+(SELECT
+            'NC' AS "Tipo",
+			ORPC."DocType",
+            -ORPC."WTSum" AS "RetTot",
+            T2."BeginStr"+''+T2."EndStr"+'00'+RIGHT(CAST(ORPC."DocNum" AS nvarchar(10)),7) AS "DocNum", 
+            ORPC."U_HBT_SER_EST"+''+ORPC."U_HBT_PTO_EST"+''+ORPC."NumAtCard" AS "NumAtCard",
+            ORPC."TaxDate", 
+            ORPC."CardCode",
+            ORPC."CardName",
+            -ISNULL(BaseSinIva."BaseSinIva",0) AS "BaseSinIva",
+            -ISNULL(BaseConIva."BaseConIva",0) AS "BaseConIva",
+            -ORPC."VatSum" AS "IVA",
+            -ORPC."DocTotal" AS "TotFact",
+            0 AS "ICE",
+            -ISNULL(RetFte."RetFte",0) AS "RetFte",
+            -ISNULL(RetIVA."RetIVA",0) AS "RetIVA",
+            ORPC."U_HBT_SUS_TRIB" AS "IST",
+            ORPC."U_HBT_TIP_COMP" AS "TP",
+			-ISNULL(ExcentoIva."ExcentoIva",0) AS "ExcentoIva",
+			OCRD."LicTradNum",
+			ORPC."U_HBT_AUT_FAC",
+			ORPC."U_HBT_Autorizacion",
+			'0' AS "U_SYP_MTVCOMP",
+			-ISNULL(IvaNoObj."IvaNoObj",0) AS "IvaNoObj"
+      FROM ORPC
+	  INNER JOIN OCRD ON ORPC."CardCode" = OCRD."CardCode"
+	  INNER JOIN NNM1 T2 ON ORPC."Series" = T2."Series" AND T2."ObjectCode" = '19' 
+      LEFT JOIN
+      (
+            SELECT
+                  ORPC."DocEntry",
+                  SUM((RPC1."LineTotal")-(RPC1."LineTotal"*ORPC."DiscPrcnt"/100)) AS "BaseSinIva"
+            FROM ORPC
+            INNER JOIN RPC1 ON RPC1."DocEntry" = ORPC."DocEntry" 
+            INNER JOIN OCRD ON ORPC."CardCode" = OCRD."CardCode"
+			INNER JOIN OSTC ON RPC1."TaxCode" = OSTC."Code"
+            --INNER JOIN CRD1 ON OCRD."CardCode" = CRD1."CardCode" AND ISNULL(ORPC.PayToCode,'PRINCIPAL') = CRD1.Address AND CRD1.AdresType='B' AND CRD1.Country = 'EC'
+            WHERE ORPC."CANCELED" = 'N' 
+			AND OSTC."U_HBT_TarifaIVA" = '0'
+            --AND RPC1."TaxCode" LIKE 'IVA%0'
+            GROUP BY ORPC."DocEntry"
+      )BaseSinIva ON ORPC."DocEntry" = BaseSinIva."DocEntry"
+      LEFT JOIN
+      (
+            SELECT
+                  ORPC."DocEntry",
+                  SUM((RPC1."LineTotal")-(RPC1."LineTotal"*ORPC."DiscPrcnt"/100)) AS "BaseConIva"
+            FROM ORPC
+            INNER JOIN RPC1 ON RPC1."DocEntry" = ORPC."DocEntry" 
+            INNER JOIN OCRD ON ORPC."CardCode" = OCRD."CardCode"
+			INNER JOIN OSTC ON RPC1."TaxCode" = OSTC."Code"
+            --INNER JOIN CRD1 ON OCRD."CardCode" = CRD1."CardCode" AND ISNULL(ORPC.PayToCode,'MATRIZ') = CRD1.Address AND CRD1.AdresType='B' AND CRD1.Country = 'EC'
+            WHERE ORPC."CANCELED" = 'N' 
+			AND OSTC."U_HBT_TarifaIVA" = '2'
+            --AND RPC1."TaxCode" LIKE 'IVA%12'
+            GROUP BY ORPC."DocEntry"
+      )BaseConIva ON ORPC."DocEntry" = BaseConIva."DocEntry"
+	  LEFT JOIN
+      (
+            SELECT
+                  ORPC."DocEntry",
+                  SUM((RPC1."LineTotal")-(RPC1."LineTotal"*ORPC."DiscPrcnt"/100)) AS "ExcentoIva"
+            FROM ORPC
+            INNER JOIN RPC1 ON RPC1."DocEntry" = ORPC."DocEntry" 
+            INNER JOIN OCRD ON ORPC."CardCode" = OCRD."CardCode"
+			INNER JOIN OSTC ON RPC1."TaxCode" = OSTC."Code"
+            --INNER JOIN CRD1 ON OCRD."CardCode" = CRD1."CardCode" AND ISNULL(ORPC.PayToCode,'MATRIZ') = CRD1.Address AND CRD1.AdresType='B' AND CRD1.Country = 'EC'
+            WHERE ORPC."CANCELED" = 'N' 
+			AND OSTC."U_HBT_TarifaIVA" = '7'
+            --AND RPC1."TaxCode" = 'EXE_IVA'
+            GROUP BY ORPC."DocEntry"
+      )ExcentoIva ON ORPC."DocEntry" = ExcentoIva."DocEntry"
+	  LEFT JOIN
+      (
+            SELECT
+                  ORPC."DocEntry",
+                  SUM((RPC1."LineTotal")-(RPC1."LineTotal"*ORPC."DiscPrcnt"/100)) AS "IvaNoObj"
+            FROM ORPC
+            INNER JOIN RPC1 ON RPC1."DocEntry" = ORPC."DocEntry" 
+            INNER JOIN OCRD ON ORPC."CardCode" = OCRD."CardCode"
+			INNER JOIN OSTC ON RPC1."TaxCode" = OSTC."Code"
+            WHERE ORPC."CANCELED" = 'N' 
+			AND OSTC."U_HBT_TarifaIVA" = '6'
+            --AND RPC1."TaxCode" LIKE 'IVA%OB'
+            GROUP BY ORPC."DocEntry"
+      )IvaNoObj ON ORPC."DocEntry" = IvaNoObj."DocEntry"
+      LEFT JOIN
+      (
+            SELECT 
+                  RPC5."AbsEntry",
+                  SUM("WTAmnt") AS "RetFte"
+            FROM RPC5
+            WHERE "BaseType" = 'N'
+            GROUP BY RPC5."AbsEntry"
+      )RetFte ON ORPC."DocEntry" = RetFte."AbsEntry"
+      LEFT JOIN
+      (
+            SELECT 
+                  RPC5."AbsEntry",
+                  SUM("WTAmnt") AS "RetIVA"
+            FROM RPC5
+            WHERE "BaseType" = 'V'
+            GROUP BY RPC5."AbsEntry"
+      )RetIVA ON ORPC."DocEntry" = RetIVA."AbsEntry"
+      WHERE ORPC."CANCELED" = 'N'
+      AND ORPC."DocSubType" = '--'
+      AND ISNULL(ORPC."U_HBT_SUS_TRIB",'') <> 99
+     -- AND ORPC."TaxDate" BETWEEN @FechaInicio and @FechaFin
+	 )

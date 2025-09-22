@@ -1,0 +1,31 @@
+id: HBT_SP_TRANSACNOT_PRODUCCION
+name: Transacciones y Notificaciones de Producción
+engine: HANA
+scope: PRODUCCION
+owner: juan.herrera@heinsohntech.com
+version: 1.0.0
+objects: [202, 59, 60, 162, 66]   # OWOR, OIGN/IGN1, OIGE/IGE1, OMRV/MRV1, OITT
+modules: [Producción, Inventarios]
+processes: [P-AGR, P-PIN, P-TYS, P-EMP, P-DIF, P-REEMP]
+tables: [OWOR, OIGN, IGN1, OIGE, IGE1, OMRV, MRV1, OITM, NNM1, OITT, OBVL, OITL, ITL1]
+udf_keys:
+  - U_ASA_OP
+  - U_ASA_PROC_OF
+  - U_ASA_RACK
+  - U_ASA_RACK_PIN
+  - U_ASA_TIP_ENT
+  - U_ASA_TIP_SAL
+  - U_ASA_REPROC
+  - U_ASA_MRR_*, U_ASA_MRC_*   # motivos rechazo
+risk_level: Alto
+nl_examples:
+  - "Bloquear cierre de OF sin consumo de componentes"
+  - "Validar que el lote corresponda al rack pinchado"
+  - "Exigir motivo de rechazo en recibo de tinturado"
+governance:
+  multi_tenant_isolation: true
+  audit_log: true
+  secret_vault_required: true
+changelog:
+  - date: 2025-09-18
+    change: Creación inicial desde legado

@@ -1,0 +1,13 @@
+id: R-1006
+name: No permite cerrar OF sin consumos de componentes
+object_type: 202
+transactions: [A, U]
+policy_type: Consistencia
+domain: ConsumoComponentes
+tables: [OWOR, IGE1, OITM]
+condition_summary: >
+  Si OWOR.Status='L' (cerrada), debe existir salida de componentes (IGE1 JOIN OITM) para la OF.
+error:
+  code: -1006
+  message: "HBT: No puede cerrar orden sin consumo de componentes"
+severity: Bloqueante

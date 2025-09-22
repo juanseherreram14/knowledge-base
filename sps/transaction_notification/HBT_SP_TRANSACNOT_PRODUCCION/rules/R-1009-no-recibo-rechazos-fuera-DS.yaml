@@ -1,0 +1,13 @@
+id: R-1009
+name: No recibo de RECHAZOS en almacén distinto a DS
+object_type: 59
+transactions: [A, U]
+policy_type: Prohibicion
+domain: Almacen
+tables: [IGN1]
+condition_summary: >
+  IGN1.TranType='R' AND WhsCode<>'DS' AND BaseType=202.
+error:
+  code: -1009
+  message: "HBT: No puede ingresar producto rechazado a almacén distinto a Desecho"
+severity: Bloqueante

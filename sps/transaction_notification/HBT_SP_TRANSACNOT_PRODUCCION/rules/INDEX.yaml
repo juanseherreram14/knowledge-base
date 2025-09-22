@@ -1,0 +1,54 @@
+sp_id: HBT_SP_TRANSACNOT_PRODUCCION
+rules:
+  - { id: R-1000, code: -1000, name: "Campo Lote obligatorio (OWOR)", domain: Lote, object_type: 202 }
+  - { id: R-1001, code: -1001, name: "Rack obligatorio (OWOR, no P-AGR/P-PIN/P-REEMP)", domain: Rack, object_type: 202 }
+  - { id: R-1002, code: -1002, name: "Proceso obligatorio en Lista Materiales (OITT)", domain: Proceso, object_type: 66 }
+  - { id: R-1003, code: -1003, name: "Proceso obligatorio en OF (OWOR)", domain: Proceso, object_type: 202 }
+  - { id: R-1004, code: -1004, name: "Variedad obligatoria en OF (OWOR)", domain: Variedad, object_type: 202 }
+  - { id: R-1005, code: -1005, name: "No dos OF abiertas misma variedad", domain: Variedad, object_type: 202 }
+  - { id: R-1006, code: -1006, name: "No cerrar OF sin consumos (IGE1)", domain: ConsumoComponentes, object_type: 202 }
+  - { id: R-1007, code: -1007, name: "No cerrar OF sin recibos (IGN1)", domain: RecibosPT, object_type: 202 }
+  - { id: R-1008, code: -1008, name: "No recibo COMPLETOS en DS (IGN1)", domain: Almacen, object_type: 59 }
+  - { id: R-1009, code: -1009, name: "No recibo RECHAZOS fuera de DS (IGN1)", domain: Almacen, object_type: 59 }
+  - { id: R-1010, code: -1010, name: "No salida rechazos para revalorización desde almacén != DS", domain: Almacen, object_type: 60 }
+  - { id: R-1011, code: -1011, name: "Tipo de entrada obligatorio (OIGN/IGN1)", domain: TipoOperacion, object_type: 59 }
+  - { id: R-1012, code: -1012, name: "Tipo de salida obligatorio (OIGE/IGE1)", domain: TipoOperacion, object_type: 60 }
+  - { id: R-1013, code: -1013, name: "Revalorización solo en Pinchado (P-AGR)", domain: Revalorizacion, object_type: 162 }
+  - { id: R-1014, code: -1014, name: "Prohíbe revalorización tipo 'P' (modificación de precio)", domain: Revalorizacion, object_type: 162 }
+  - { id: R-1015, code: -1015, name: "Semielaborado debe ir a almacenes de Línea", domain: Almacen, object_type: 202 }
+  - { id: R-1016, code: -1016, name: "No dos OF con mismo N° Lote (no AGR/TYS/EMP)", domain: Lote, object_type: 202 }
+  - { id: R-1022, code: -1022, name: "Blanqueo: campo Tanque obligatorio", domain: Calidad, object_type: 202 }
+  - { id: R-1024, code: -1024, name: "Serie debe corresponder al proceso (OWOR vs NNM1)", domain: Series, object_type: 202 }
+  - { id: R-1025, code: -1025, name: "Rack Pinchado obligatorio", domain: Rack, object_type: 202 }
+  - { id: R-1026, code: -1026, name: "Responsable de rejilla obligatorio (P-PIN)", domain: Calidad, object_type: 59 }
+  - { id: R-1027, code: -1027, name: "Número de rejilla obligatorio (P-PIN o P-DIF)", domain: Calidad, object_type: 59 }
+  - { id: R-1028, code: -1028, name: "No recibo con OCR3=NRK001", domain: CentrosCostos, object_type: 59 }
+  - { id: R-1029, code: -1029, name: "Agrícola: rechazo debe tener motivo (MRR_*)", domain: Calidad, object_type: 59 }
+  - { id: R-1030, code: -1030, name: "Tinturado: rechazo debe tener motivo (MRC_*)", domain: Calidad, object_type: 59 }
+  - { id: R-1031, code: -1031, name: "Reproceso 02: Lote debe tener longitud 10", domain: Lote, object_type: 202 }
+  - { id: R-1032, code: -1032, name: "No consumir si lote no revalorizado (reproceso)", domain: Revalorizacion, object_type: 60 }
+  - { id: R-1033, code: -1033, name: "Lote en recibo debe corresponder a OF", domain: Lote, object_type: 59 }
+  - { id: R-1034, code: -1034, name: "Lote debe corresponder al RACK PIN", domain: Lote, object_type: 202 }
+  - { id: R-1035, code: -1035, name: "Comentario debe coincidir con N° Lote", domain: Lote, object_type: 202 }
+  - { id: R-1036, code: -1036, name: "Etapa obligatoria (no AGR/PIN/EMP/REEMP)", domain: Proceso, object_type: 202 }
+  - { id: R-1037, code: -1037, name: "Cantidad recibida no debe superar planificada", domain: Cantidades, object_type: 202 }
+  - { id: R-1038, code: -1038, name: "Proceso OF debe corresponder al Item (OITT)", domain: Proceso, object_type: 202 }
+  - { id: R-1039, code: -1039, name: "Tinturado: seleccionar estado (calidad)", domain: Calidad, object_type: 59 }
+  - { id: R-1040, code: -1040, name: "Difusión: color obligatorio", domain: Calidad, object_type: 59 }
+  - { id: R-1041, code: -1041, name: "Tinturado reproceso: comentario obligatorio", domain: Calidad, object_type: 59 }
+  - { id: R-1042, code: -1042, name: "Cantidad = suma de rechazados (AGR/TYS)", domain: Calidad, object_type: 59 }
+  - { id: R-1043, code: -1043, name: "Salida solo Reval/Reproceso (UserSign=14)", domain: TipoOperacion, object_type: 60 }
+  - { id: R-1044, code: -1044, name: "Salida solo Revalorización (UserSign=11)", domain: TipoOperacion, object_type: 60 }
+  - { id: R-1045, code: -1045, name: "Tinturado reproceso: rejilla obligatoria (recibo)", domain: Calidad, object_type: 59 }
+  - { id: R-1046, code: -1046, name: "Entrada reproceso: rejilla obligatoria", domain: Calidad, object_type: 59 }
+  - { id: R-1047, code: -1047, name: "Prohibido recibos de TYS (UserSign=12)", domain: Autorizaciones, object_type: 59 }
+  - { id: R-1048, code: -1048, name: "Revalorización solo en Empaque (P-TYS)", domain: Revalorizacion, object_type: 162 }
+  - { id: R-1049, code: -1049, name: "Serie debe corresponder a clase de operación (AGR)", domain: Series, object_type: 59 }
+  - { id: R-1050, code: -1050, name: "No OF duplicada (TYS/EMP) sin reproceso 01", domain: Lote, object_type: 202 }
+  - { id: R-1051, code: -1051, name: "No revalorizar mismo lote más de una vez", domain: Revalorizacion, object_type: 162 }
+  - { id: R-1052, code: -1052, name: "Entrada reproceso: comentario obligatorio", domain: Calidad, object_type: 59 }
+  - { id: R-1053, code: -1053, name: "No dos OF abiertas mismo lote (P-PIN)", domain: Lote, object_type: 202 }
+  - { id: R-1054, code: -1054, name: "No recibo con costo cero", domain: Costos, object_type: 59 }
+  - { id: R-1055, code: -1055, name: "Empaque: reproceso sin revalorización previa", domain: Revalorizacion, object_type: 60 }
+  - { id: R-1056, code: -1056, name: "No recibo si faltan consumos de componentes", domain: ConsumoComponentes, object_type: 59 }
+notes: "Completar archivos YAML por cada regla siguiendo los ejemplos."

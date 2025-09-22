@@ -1,0 +1,13 @@
+id: R-1007
+name: No permite cerrar OF sin recibos de PT
+object_type: 202
+transactions: [A, U]
+policy_type: Consistencia
+domain: RecibosPT
+tables: [OWOR, IGN1]
+condition_summary: >
+  Si OWOR.Status='L', debe existir recibo (IGN1.BaseEntry=OWOR.DocEntry).
+error:
+  code: -1007
+  message: "HBT: No puede cerrar orden sin ingreso de producto terminado"
+severity: Bloqueante

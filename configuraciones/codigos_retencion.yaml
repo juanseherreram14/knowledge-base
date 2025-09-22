@@ -1,0 +1,7 @@
+# Códigos de retención (ejemplo)
+# Estructura sugerida:
+# - code: "RET001"
+#   description: "Retención fuente servicios"
+#   rate: 1.75
+#   base_min: 27.0
+#   base_max: null

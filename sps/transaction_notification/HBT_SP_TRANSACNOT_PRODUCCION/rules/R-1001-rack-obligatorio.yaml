@@ -1,0 +1,15 @@
+id: R-1001
+name: Rack obligatorio en OWOR (excepto AGR/PIN/REEMP)
+object_type: 202
+transactions: [A, U]
+policy_type: Obligatorio
+domain: Rack
+tables: [OWOR]
+condition_summary: >
+  OWOR.DocEntry = :list_of_cols_val_tab_del
+  AND U_ASA_PROC_OF NOT IN ('P-AGR','P-PIN','P-REEMP')
+  AND (U_ASA_RACK IS NULL OR U_ASA_RACK='').
+error:
+  code: -1001
+  message: "HBT: Debe llenar el campo Rack"
+severity: Bloqueante
