@@ -1,0 +1,198 @@
+# Glossary de términos NL → Tablas SAP Business One (HANA/SQL)
+# Uso: el asistente hace fuzzy-match por "synonyms" y selecciona "tables" y "joins" sugeridos.
+
+- canonical: articulo
+  synonyms: [producto, ítem, item, material, referencia, sku, código de artículo, itemcode]
+  tables: [OITM]
+  key_fields: [ItemCode, ItemName, ItmsGrpCod, U_*]
+  joins: []
+  notes: "Base maestra de artículos."
+
+- canonical: lote
+  synonyms: [lote, n° lote, batch, distnumber, serie de lote]
+  tables: [OBTN, OITL, ITL1, OBVL]
+  key_fields: [OBTN.DistNumber, OBTN.ItemCode, ITL1.SysNumber, OITL.LogEntry, OBVL.DocType]
+  joins:
+    - "OITL.LogEntry = ITL1.LogEntry"
+    - "ITL1.SysNumber = OBTN.SysNumber"
+  notes: "OBVL enlaza revalorizaciones (DocType=162)."
+
+- canonical: orden_fabricacion
+  synonyms: [orden de fabricación, of, work order, producción, owor]
+  tables: [OWOR, WOR1]
+  key_fields: [OWOR.DocEntry, OWOR.DocNum, OWOR.ItemCode, OWOR.Status, WOR1.ItemCode]
+  joins:
+    - "OWOR.DocEntry = WOR1.DocEntry"
+  notes: "Estados: R=liberada, P=planificada, L=cerrada."
+
+- canonical: recibo_produccion
+  synonyms: [recibo de producción, ingreso pt, oign, ign1, receipt from production]
+  tables: [OIGN, IGN1]
+  key_fields: [OIGN.DocEntry, IGN1.BaseEntry, IGN1.BaseType]
+  joins: []
+  notes: "IGN1.BaseType=202 → viene de OF."
+
+- canonical: consumo_componentes
+  synonyms: [salida a producción, consumo, oige, ige1, issue for production]
+  tables: [OIGE, IGE1]
+  key_fields: [OIGE.DocEntry, IGE1.BaseEntry, IGE1.BaseType, IGE1.ItemCode]
+  joins: []
+  notes: "IGE1.BaseType=202 → consumo de OF."
+
+- canonical: lista_materiales
+  synonyms: [lista de materiales, bom, receta, oitt]
+  tables: [OITT]
+  key_fields: [OITT.Code, OITT.U_*]
+  joins: []
+  notes: "Definición del proceso del ítem."
+
+- canonical: socio_negocios
+  synonyms: [cliente, proveedor, sn, bp, business partner, cardcode]
+  tables: [OCRD]
+  key_fields: [CardCode, CardName, CardType, GroupCode]
+  joins: []
+  notes: "CardType: C=Cliente, S=Proveedor, L=Lead."
+
+- canonical: ventas_factura
+  synonyms: [factura de ventas, factura, oi nv, inv1, ventas]
+  tables: [OINV, INV1]
+  key_fields: [OINV.DocEntry, OINV.DocNum, INV1.ItemCode, OINV.CardCode]
+  joins:
+    - "OINV.DocEntry = INV1.DocEntry"
+  notes: "Estados y pagos ver ORCT (recibos)."
+
+- canonical: ventas_pedido
+  synonyms: [pedido de ventas, orden de venta, ordr, rdr1]
+  tables: [ORDR, RDR1]
+  key_fields: [ORDR.DocEntry, RDR1.ItemCode, ORDR.CardCode]
+  joins:
+    - "ORDR.DocEntry = RDR1.DocEntry"
+  notes: "Entrega relacionada ODLN."
+
+- canonical: ventas_entrega
+  synonyms: [entrega, despacho, odln, dln1, delivery]
+  tables: [ODLN, DLN1]
+  key_fields: [ODLN.DocEntry, DLN1.ItemCode, ODLN.CardCode]
+  joins:
+    - "ODLN.DocEntry = DLN1.DocEntry"
+  notes: "Afecta stock."
+
+- canonical: compras_factura
+  synonyms: [factura de compras, ap invoice, opch, pch1]
+  tables: [OPCH, PCH1]
+  key_fields: [OPCH.DocEntry, PCH1.ItemCode, OPCH.CardCode]
+  joins:
+    - "OPCH.DocEntry = PCH1.DocEntry"
+  notes: "Relación con entrada mercancías OPDN/PDN1."
+
+- canonical: compras_pedido
+  synonyms: [pedido de compras, orden de compra, por1, opor]
+  tables: [OPOR, POR1]
+  key_fields: [OPOR.DocEntry, POR1.ItemCode, OPOR.CardCode]
+  joins:
+    - "OPOR.DocEntry = POR1.DocEntry"
+  notes: ""
+
+- canonical: compras_entrada_mercancias
+  synonyms: [entrada de mercancías compra, goods receipt po, opdn, pdn1]
+  tables: [OPDN, PDN1]
+  key_fields: [OPDN.DocEntry, PDN1.ItemCode, OPDN.CardCode]
+  joins:
+    - "OPDN.DocEntry = PDN1.DocEntry"
+  notes: "Puede generar lotes/series."
+
+- canonical: inventario_transferencia
+  synonyms: [transferencia de stock, owtr, wtr1, traspaso, mover a almacén]
+  tables: [OWTR, WTR1]
+  key_fields: [OWTR.DocEntry, WTR1.ItemCode, WTR1.WhsCode]
+  joins:
+    - "OWTR.DocEntry = WTR1.DocEntry"
+  notes: ""
+
+- canonical: almacenes
+  synonyms: [almacén, bodega, whscode, depósito, warehouse]
+  tables: [OWHS]
+  key_fields: [WhsCode, WhsName, U_*]
+  joins: []
+  notes: "Códigos especiales: DS (Cuarentena), EM (Empaque), PI (Pinchado)."
+
+- canonical: series_documento
+  synonyms: [serie, numeración, nnm1, numerador, series]
+  tables: [NNM1]
+  key_fields: [Series, SeriesName, Remark, ObjectCode]
+  joins: []
+  notes: "Usado para validar proceso vs serie."
+
+- canonical: centros_costos
+  synonyms: [centro de costos, dimensiones, ocrcode, ocrcode2, ocr3, reparto]
+  tables: [OOCR]
+  key_fields: [OcrCode, OcrName, DimCode]
+  joins: []
+  notes: "Campos OITM/lineas: OcrCode..OcrCode5."
+
+- canonical: revalorizacion
+  synonyms: [revalorización, ajuste costo, omrv, mrv1, revalue]
+  tables: [OMRV, MRV1, OBVL]
+  key_fields: [OMRV.DocEntry, MRV1.ItemCode, OBVL.DocType]
+  joins:
+    - "OMRV.DocEntry = MRV1.DocEntry"
+  notes: "OBVL enlaza lote ↔ reval."
+
+- canonical: precios_listas
+  synonyms: [lista de precios, price list, itmsgrpcod, opln]
+  tables: [OPLN, ITM1]
+  key_fields: [OPLN.ListNum, ITM1.Price, ITM1.ItemCode]
+  joins:
+    - "OPLN.ListNum = ITM1.PriceList"
+  notes: ""
+
+- canonical: existencias
+  synonyms: [stock, inventario, disponible, on hand, saldo]
+  tables: [OITW]
+  key_fields: [OITW.ItemCode, OITW.WhsCode, OITW.OnHand]
+  joins:
+    - "OITM.ItemCode = OITW.ItemCode"
+    - "OWHS.WhsCode = OITW.WhsCode"
+  notes: "Para por-lote usar OBTN/OBTQ."
+
+- canonical: calidad
+  synonyms: [calidad, restricción, estado de calidad, rechazo, mrr, mrc, ph, densidad, temperatura]
+  tables: [OIGN, IGN1, OWOR, OITT]
+  key_fields: [IGN1.U_ASA_RESTR, IGN1.TranType, OWOR.U_* , OITT.U_*]
+  joins: []
+  notes: "MRR_* (Agrícola), MRC_* (Tinturado)."
+
+- canonical: proceso_produccion
+  synonyms: [proceso, etapa, línea, p-agr, p-pin, p-tys, p-emp, p-dif, p-reemp]
+  tables: [OWOR, OITT, NNM1]
+  key_fields: [OWOR.U_ASA_PROC_OF, OITT.U_ASA_PROC_LM, NNM1.Remark]
+  joins: []
+  notes: "Validar coherencia proceso ↔ serie ↔ item."
+
+- canonical: documentos_venta
+  synonyms: [ventas, pedidos, entregas, facturas, devoluciones]
+  tables: [ORDR, RDR1, ODLN, DLN1, OINV, INV1, ORIN, RIN1]
+  key_fields: [DocEntry, DocNum, ItemCode, CardCode, DocDate]
+  joins:
+    - "ORDR.DocEntry = RDR1.DocEntry"
+    - "ODLN.DocEntry = DLN1.DocEntry"
+    - "OINV.DocEntry = INV1.DocEntry"
+    - "ORIN.DocEntry = RIN1.DocEntry"
+  notes: "Cadena Pedido→Entrega→Factura."
+
+- canonical: documentos_compra
+  synonyms: [compras, pedidos, entradas, facturas, notas crédito compra]
+  tables: [OPOR, POR1, OPDN, PDN1, OPCH, PCH1, ORPC, RPC1]
+  key_fields: [DocEntry, DocNum, ItemCode, CardCode, DocDate]
+  joins:
+    - "OPOR.DocEntry = POR1.DocEntry"
+    - "OPDN.DocEntry = PDN1.DocEntry"
+    - "OPCH.DocEntry = PCH1.DocEntry"
+  notes: ""
+
+- canonical: parametros_tn
+  synonyms: [transaction notification, tn, object_type, transaction_type, docentry]
+  tables: []
+  key_fields: [object_type, transaction_type, list_of_cols_val_tab_del]
+  joins: []
+  notes: "Parámetros de entrada del SP TN."
